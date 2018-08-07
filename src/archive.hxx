@@ -81,16 +81,18 @@ public:
 	inline Archive& operator>>(std::string& value);
 
 protected:
-	virtual inline void save(const void* bytes, size_t size);
-	virtual inline void load(void* bytes, size_t size);
+	virtual inline void save(const void* bytes, std::size_t size);
+	virtual inline void load(void* bytes, std::size_t size);
 
 private:
+	template<typename T>
+	void transformImpl(T& tuple, EmptySequence);
 	template<typename T, std::size_t... I>
 	void transformImpl(T& tuple, IndexSequence<I...>);
 
 	std::vector<unsigned char> buffer;
 
-	size_t current = 0;
+	std::size_t current = 0;
 };
 
 class Archival {
@@ -101,10 +103,6 @@ public:
 	virtual void unpack(Archive& archive) = 0;
 };
 
-void Archive::pack(void)
-{
-}
-
 template<typename Front, typename... Rest>
 void Archive::pack(const Front& front, const Rest&... rest)
 {
@@ -112,9 +110,10 @@ void Archive::pack(const Front& front, const Rest&... rest)
 	this->pack(rest...);
 }
 
-void Archive::unpack(void)
+void Archive::pack(void)
 {
 }
+
 
 template<typename Front, typename... Rest>
 void Archive::unpack(Front& front, Rest&... rest)
@@ -123,11 +122,20 @@ void Archive::unpack(Front& front, Rest&... rest)
 	this->unpack(rest...);
 }
 
+void Archive::unpack(void)
+{
+}
+
 template<typename... Ts>
 void Archive::transform(std::tuple<Ts...>& tuple)
 {
 	constexpr auto size = std::tuple_size<std::tuple<Ts...>>::value;
 	this->transformImpl(tuple, make_index_sequence<size>());
+}
+
+template<typename T>
+void Archive::transformImpl(T& tuple, EmptySequence)
+{
 }
 
 template<typename T, std::size_t... I>
@@ -166,7 +174,7 @@ Archive& Archive::operator<<(const T& object)
 
 inline Archive& Archive::operator<<(const std::string& value)
 {
-	size_t size = value.size();
+	std::size_t size = value.size();
 	this->save(reinterpret_cast<const void*>(&size), sizeof(size));
 
 	this->save(reinterpret_cast<const void*>(value.c_str()), value.size());
@@ -210,7 +218,7 @@ Archive& Archive::operator>>(T& object)
 
 inline Archive& Archive::operator>>(std::string& value)
 {
-	size_t size;
+	std::size_t size;
 	this->load(reinterpret_cast<void*>(&size), sizeof(size));
 
 	value.resize(size);
@@ -219,7 +227,7 @@ inline Archive& Archive::operator>>(std::string& value)
 	return *this;
 }
 
-void Archive::save(const void* bytes, size_t size)
+void Archive::save(const void* bytes, std::size_t size)
 {
 	auto binary = reinterpret_cast<unsigned char*>(const_cast<void*>(bytes));
 	std::vector<unsigned char> next(binary, binary + size) ;
@@ -227,7 +235,7 @@ void Archive::save(const void* bytes, size_t size)
 	std::copy(next.begin(), next.end(), std::back_inserter(this->buffer));
 }
 
-void Archive::load(void* bytes, size_t size)
+void Archive::load(void* bytes, std::size_t size)
 {
 	::memcpy(bytes, reinterpret_cast<void*>(this->buffer.data() + current), size);
 	current += size;

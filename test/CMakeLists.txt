@@ -30,6 +30,7 @@ ENDFUNCTION(BUILD_TEST)
 
 SET(TEST_SRCS ${LIB_DIR}/klay/testbench.cpp
 			  test-main.cpp
-			  test-archive.cpp)
+			  test-archive.cpp
+			  test-functor.cpp)
 
 BUILD_TEST(${PROJECT_NAME} "${TEST_SRCS}")

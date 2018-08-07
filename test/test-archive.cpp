@@ -284,3 +284,10 @@ TESTCASE(PARAMETER_PACK_TRANSFORM)
 	TEST_EXPECT(input4, std::get<3>(tuple));
 	TEST_EXPECT(*input5, *(std::get<4>(tuple)));
 }
+
+TESTCASE(PARAMETER_PACK_TRANSFORM_EMPTY)
+{
+	auto tuple = std::make_tuple();
+	Archive archive;
+	archive.transform(tuple);
+}

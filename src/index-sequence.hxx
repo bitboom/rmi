@@ -25,20 +25,25 @@
 
 namespace rmi {
 
+struct EmptySequence {};
+
 template<std::size_t...>
 struct IndexSequence {};
 
 namespace {
 
-template<std::size_t N, size_t... S>
+template<std::size_t N, std::size_t... S>
 struct SequenceExpansion : SequenceExpansion<N-1, N-1, S...> {};
 
 template<std::size_t... S>
 struct SequenceExpansion<0, S...> { using Type = IndexSequence<S...>; };
+
+template<>
+struct SequenceExpansion<0> { using Type = EmptySequence; };
 
 } // anonymous namespace
 
 template<std::size_t N>
 using make_index_sequence = typename SequenceExpansion<N>::Type;
 
-} // namespace rmi
+} // rmi namespace
