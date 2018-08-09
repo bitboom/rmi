@@ -14,42 +14,28 @@
  *  limitations under the License
  */
 /*
- * @file        colorize.hxx
+ * @file        test-console.cpp
  * @author      Sangwan Kwon (sangwan.kwon@samsung.com)
- * @brief       Colorize console text.
  */
 
-#pragma once
+#include "audit/console.hxx"
 
-#include <ostream>
+#include <klay/testbench.h>
 
-namespace rmi {
-namespace common { 
+#include <iostream>
 
-enum class Code {
-	BLACK = 30,
-	RED = 31,
-	GREEN = 32,
-	YELLOW = 33,
-	BLUE = 34,
-	MAGENTA = 35,
-	CYAN = 36,
-	WHITE = 37,
-	DEFAULT = 39
-};
+TESTCASE(CONCOLE_LOGGER_TEXT)
+{
+	CONSOLE_I("LogLevel - Info");
+	CONSOLE_D("LogLevel - Debug");
+	CONSOLE_W("LogLevel - Warning");
+	CONSOLE_E("LogLevel - Error");
+}
 
-class Colorize {
-public:
-	explicit Colorize(Code code = Code::DEFAULT) : code(code) {}
-
-	friend std::ostream& operator<<(std::ostream& os, const Colorize& c)
-	{
-		return os << "\033[" << static_cast<int>(c.code) << "m";
-	}
-
-private:
-	Code code;
-};
-
-} // namespace common
-} // namespace rmi
+TESTCASE(CONCOLE_LOGGER_ARGS)
+{
+	CONSOLE_I("LogLevel - Info: " << 1 << '2' << "3");
+	CONSOLE_D("LogLevel - Debug: " << 1 << '2' << "3");
+	CONSOLE_W("LogLevel - Warning: " << 1 << '2' << "3");
+	CONSOLE_E("LogLevel - Error: " << 1 << '2' << "3");
+}

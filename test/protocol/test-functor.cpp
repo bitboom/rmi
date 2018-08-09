@@ -19,7 +19,7 @@
  */
 
 #include "protocol/functor.hxx"
-#include "protocol/archive.hxx"
+#include "stream/archive.hxx"
 
 #include <klay/testbench.h>
 
@@ -27,6 +27,7 @@
 #include <memory>
 
 using namespace rmi::protocol;
+using namespace rmi::stream;
 
 struct Foo {
 	bool setName(const std::string& name)

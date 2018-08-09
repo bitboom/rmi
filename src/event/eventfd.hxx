@@ -14,38 +14,38 @@
  *  limitations under the License
  */
 /*
- * @file        logger.hxx
- * @author      Sangwan Kwon (sangwan.kwon@samsung.com)
+ * @file        eventfd.hxx
+ * @author      Jaemin Ryu (jm77.ryu@samsung.com)
+ *              Sangwan Kwon (sangwan.kwon@samsung.com)
+ * @brief       A file descriptor for event notification.
  */
 
-#include "logger.hxx"
+#pragma once
 
-#include <string>
+#include <sys/eventfd.h>
 
 namespace rmi {
-namespace common {
-namespace audit {
+namespace event {
 
-void Logger::info(const std::string& message) noexcept
-{
-	this->log(LogLevel::INFO, message);
-}
+class EventFD final {
+public:
+	explicit EventFD(unsigned int initval = 0, int flags = EFD_SEMAPHORE | EFD_CLOEXEC);
+	~EventFD();
 
-void Logger::debug(const std::string& message) noexcept
-{
-	this->log(LogLevel::DEBUG, message);
-}
+	EventFD(const EventFD&) = delete;
+	EventFD& operator=(const EventFD&) = delete;
 
-void Logger::warning(const std::string& message) noexcept
-{
-	this->log(LogLevel::WARNING, message);
-}
+	EventFD(EventFD&&) = delete;
+	EventFD& operator=(EventFD&&) = delete;
 
-void Logger::error(const std::string& message) noexcept
-{
-	this->log(LogLevel::ERROR, message);
-}
+	void send(void);
+	void receive(void);
 
-} // namespace audit
-} // namespace common
+	int getFd(void) const noexcept;
+
+private:
+	int fd;
+};
+
+} // namespace event
 } // namespace rmi

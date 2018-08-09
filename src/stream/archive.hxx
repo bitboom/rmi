@@ -36,7 +36,7 @@
 #include "index-sequence.hxx"
 
 namespace rmi {
-namespace protocol {
+namespace stream {
 
 class Archival;
 
@@ -81,6 +81,8 @@ public:
 	Archive& operator>>(std::shared_ptr<T>& pointer);
 	inline Archive& operator>>(std::string& value);
 
+	std::vector<unsigned char> buffer;
+
 protected:
 	virtual inline void save(const void* bytes, std::size_t size);
 	virtual inline void load(void* bytes, std::size_t size);
@@ -90,8 +92,6 @@ private:
 	void transformImpl(T& tuple, EmptySequence);
 	template<typename T, std::size_t... I>
 	void transformImpl(T& tuple, IndexSequence<I...>);
-
-	std::vector<unsigned char> buffer;
 
 	std::size_t current = 0;
 };
@@ -242,5 +242,5 @@ void Archive::load(void* bytes, std::size_t size)
 	current += size;
 }
 
-} // namespace protocol
+} // namespace stream
 } // namespace rmi

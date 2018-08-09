@@ -25,10 +25,9 @@
 #include <iostream>
 
 #include "logger.hxx"
-#include "../colorize.hxx"
+#include "colorize.hxx"
 
 namespace rmi {
-namespace common {
 namespace audit {
 
 class Console final : public Logger {
@@ -50,30 +49,29 @@ protected:
 
 #define CONSOLE_LOG(level, message)                       \
 	do {				                                  \
-			rmi::common::audit::Console console;                       \
+			rmi::audit::Console console;                       \
 			std::string pretty = PRETTY_MESSAGE(message); \
 			switch (level) {                              \
-			case rmi::common::audit::LogLevel::INFO:                   \
+			case rmi::audit::LogLevel::INFO:                   \
 				console.info(pretty);                     \
 				break;                                    \
-			case rmi::common::audit::LogLevel::DEBUG:                  \
+			case rmi::audit::LogLevel::DEBUG:                  \
 				console.debug(pretty);                    \
 				break;                                    \
-			case rmi::common::audit::LogLevel::WARNING:                \
+			case rmi::audit::LogLevel::WARNING:                \
 				console.warning(pretty);                  \
 				break;                                    \
-			case rmi::common::audit::LogLevel::ERROR:                  \
+			case rmi::audit::LogLevel::ERROR:                  \
 			default:                                      \
 				console.error(pretty);                    \
 				break;                                    \
 			}                                             \
 	} while (0)
 
-#define CONSOLE_I(message) CONSOLE_LOG(rmi::common::audit::LogLevel::INFO, message)
-#define CONSOLE_D(message) CONSOLE_LOG(rmi::common::audit::LogLevel::DEBUG, message)
-#define CONSOLE_W(message) CONSOLE_LOG(rmi::common::audit::LogLevel::WARNING, message)
-#define CONSOLE_E(message) CONSOLE_LOG(rmi::common::audit::LogLevel::ERROR, message)
+#define CONSOLE_I(message) CONSOLE_LOG(rmi::audit::LogLevel::INFO, message)
+#define CONSOLE_D(message) CONSOLE_LOG(rmi::audit::LogLevel::DEBUG, message)
+#define CONSOLE_W(message) CONSOLE_LOG(rmi::audit::LogLevel::WARNING, message)
+#define CONSOLE_E(message) CONSOLE_LOG(rmi::audit::LogLevel::ERROR, message)
 
 } // namespace audit
-} // namespace common
 } // namespace rmi

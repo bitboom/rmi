@@ -21,7 +21,6 @@
 #include "console.hxx"
 
 namespace rmi {
-namespace common {
 namespace audit {
 
 void Console::log(const LogLevel level, const std::string& message) noexcept
@@ -48,5 +47,4 @@ void Console::log(const LogLevel level, const std::string& message) noexcept
 }
 
 } // namespace audit
-} // namespace common
 } // namespace rmi

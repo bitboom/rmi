@@ -24,7 +24,7 @@
 #include <cstddef>
 
 namespace rmi {
-namespace protocol {
+namespace stream {
 
 struct EmptySequence {};
 
@@ -47,5 +47,5 @@ struct SequenceExpansion<0> { using Type = EmptySequence; };
 template<std::size_t N>
 using make_index_sequence = typename SequenceExpansion<N>::Type;
 
-} // namespace protocol
+} // namespace stream
 } // namespace rmi

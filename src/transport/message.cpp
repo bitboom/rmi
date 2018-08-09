@@ -14,38 +14,24 @@
  *  limitations under the License
  */
 /*
- * @file        logger.hxx
- * @author      Sangwan Kwon (sangwan.kwon@samsung.com)
+ * @file        messabe.cpp
+ * @author      Jaemin Ryu (jm77.ryu@samsung.com)
+ *              Sangwan Kwon (sangwan.kwon@samsung.com)
  */
 
-#pragma once
-
-#include <string>
+#include "message.hxx"
 
 namespace rmi {
-namespace common {
-namespace audit {
+namespace transport {
 
-enum class LogLevel : char {
-	INFO = 'I',
-	DEBUG = 'D',
-	WARNING = 'W',
-	ERROR = 'E'
-};
+std::atomic<unsigned int> Message::sequence(0);
 
-class Logger {
-public:
-	virtual ~Logger() = default;
+Message::Message(unsigned int type, const std::string& signature) :
+	header({0, type, archive.buffer.size()}),
+	signature(signature)
+{
+	this->enclose(signature);
+}
 
-	void info(const std::string& message) noexcept;
-	void debug(const std::string& message) noexcept;
-	void warning(const std::string& message) noexcept;
-	void error(const std::string& message) noexcept;
-
-protected:
-	virtual void log(const LogLevel level, const std::string& message) noexcept = 0;
-};
-
-} // namespace audit
-} // namespace common
+} // namespace transport
 } // namespace rmi
