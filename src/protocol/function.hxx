@@ -14,7 +14,7 @@
  *  limitations under the License
  */
 /*
- * @file        Function.hxx
+ * @file        function.hxx
  * @author      Sangwan Kwon (sangwan.kwon@samsung.com)
  * @brief       Hold the class member fuction.
  */
@@ -24,6 +24,7 @@
 #include <type_traits>
 
 namespace rmi {
+namespace protocol {
 namespace klass {
 
 template<typename T>
@@ -73,4 +74,5 @@ Function<R, K, Ps...> make_function(R (K::* member)(Ps...))
 }
 
 } // namespace klass
+} // namespace protocol
 } // namespace rmi

@@ -36,6 +36,7 @@
 #include "index-sequence.hxx"
 
 namespace rmi {
+namespace protocol {
 
 class Archival;
 
@@ -241,4 +242,5 @@ void Archive::load(void* bytes, std::size_t size)
 	current += size;
 }
 
+} // namespace protocol
 } // namespace rmi

@@ -18,7 +18,7 @@
  * @author      Sangwan Kwon (sangwan.kwon@samsung.com)
  */
 
-#include "archive.hxx"
+#include "protocol/archive.hxx"
 
 #include <klay/testbench.h>
 
@@ -28,7 +28,7 @@
 #include <cassert>
 #include <iostream>
 
-using namespace rmi;
+using namespace rmi::protocol;
 
 TESTCASE(SERIALIZER_FUNDAMENTAL_INT)
 {

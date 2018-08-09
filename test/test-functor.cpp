@@ -18,13 +18,15 @@
  * @author      Sangwan Kwon (sangwan.kwon@samsung.com)
  */
 
-#include "functor.hxx"
-#include "archive.hxx"
+#include "protocol/functor.hxx"
+#include "protocol/archive.hxx"
 
 #include <klay/testbench.h>
 
 #include <iostream>
 #include <memory>
+
+using namespace rmi::protocol;
 
 struct Foo {
 	bool setName(const std::string& name)
@@ -50,9 +52,9 @@ struct Foo {
 TESTCASE(FUNCTOR)
 {
 	auto foo = std::make_shared<Foo>();
-	auto fooSetName = rmi::make_functor(foo, &Foo::setName);
-	auto fooGetName =  rmi::make_functor(foo, &Foo::getName);
-	auto fooEcho = rmi::make_functor(foo, &Foo::echo); 
+	auto fooSetName = make_functor(foo, &Foo::setName);
+	auto fooGetName = make_functor(foo, &Foo::getName);
+	auto fooEcho = make_functor(foo, &Foo::echo);
 
 	std::string input = "Foo name";
 	bool ret = true;
@@ -72,10 +74,10 @@ TESTCASE(FUNCTOR_MAP)
 {
 	auto foo = std::make_shared<Foo>();
 
-	rmi::FunctorMap fooMap;
-	fooMap["setName"] = rmi::make_functor_ptr(foo, &Foo::setName);
-	fooMap["getName"] = rmi::make_functor_ptr(foo, &Foo::getName);
-	fooMap["echo"] = rmi::make_functor_ptr(foo, &Foo::echo);
+	FunctorMap fooMap;
+	fooMap["setName"] = make_functor_ptr(foo, &Foo::setName);
+	fooMap["getName"] = make_functor_ptr(foo, &Foo::getName);
+	fooMap["echo"] = make_functor_ptr(foo, &Foo::echo);
 
 	auto fooSetNamePtr = fooMap.at("setName");
 	auto fooGetNamePtr = fooMap.at("getName");
@@ -99,11 +101,11 @@ TESTCASE(ARCHIVE)
 {
 	auto foo = std::make_shared<Foo>();
 
-	rmi::FunctorMap fooMap;
-	fooMap["echo"] = rmi::make_functor_ptr(foo, &Foo::echo);
+	FunctorMap fooMap;
+	fooMap["echo"] = make_functor_ptr(foo, &Foo::echo);
 
 	std::string a("aaaa"), b("bbbb"), c("cccc");
-	rmi::Archive archive;
+	Archive archive;
 	archive << a << b << c;
 
 	auto fooEchoPtr = fooMap.at("echo");

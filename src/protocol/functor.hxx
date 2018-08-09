@@ -14,7 +14,7 @@
  *  limitations under the License
  */
 /*
- * @file        Functor.hxx
+ * @file        functor.hxx
  * @author      Sangwan Kwon (sangwan.kwon@samsung.com)
  * @brief       Functor is callable object which binds instance with member function.
  */
@@ -31,6 +31,7 @@
 #include "index-sequence.hxx"
 
 namespace rmi {
+namespace protocol {
 
 struct AbstractFunctor {
 	template<typename R, typename...Args>
@@ -154,4 +155,5 @@ std::shared_ptr<Functor<R, K, Ps...>> make_functor_ptr(std::shared_ptr<K> instan
 	return std::make_shared<Functor<R, K, Ps...>>(instance, klass::make_function(member));
 }
 
+} // namespace protocol
 } // namespace rmi
