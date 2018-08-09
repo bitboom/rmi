@@ -22,7 +22,6 @@
 
 #pragma once
 
-#include <iostream>
 #include <string>
 #include <atomic>
 #include <vector>
@@ -68,13 +67,13 @@ public:
 	template<typename... Args>
 	void enclose(Args&&... args);
 	template<typename... Args>
-	void disclose(Args&&... args);
+	void disclose(Args&... args);
 
 	MessageHeader header;
 	std::string signature;
+	Archive archive;
 
 private:
-	Archive archive;
 	static std::atomic<unsigned int> sequence;
 };
 
@@ -106,9 +105,9 @@ void Message::enclose(Args&&... args)
 }
 
 template<typename... Args>
-void Message::disclose(Args&&... args)
+void Message::disclose(Args&... args)
 {
-	this->archive.unpack(std::forward<Args>(args)...);
+	this->archive.unpack(args...);
 }
 
 } // namespace transport

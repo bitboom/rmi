@@ -70,6 +70,7 @@ public:
 	template<typename T>
 	Archive& operator<<(const std::shared_ptr<T>& pointer);
 	inline Archive& operator<<(const std::string& value);
+	inline Archive& operator<<(const Archive& archive);
 
 	template<typename T, IsFundamental<T> = 0>
 	Archive& operator>>(T& value);
@@ -80,8 +81,10 @@ public:
 	template<typename T>
 	Archive& operator>>(std::shared_ptr<T>& pointer);
 	inline Archive& operator>>(std::string& value);
+	inline Archive& operator>>(Archive& archive);
 
 	std::vector<unsigned char> buffer;
+	std::size_t current = 0;
 
 protected:
 	virtual inline void save(const void* bytes, std::size_t size);
@@ -92,8 +95,6 @@ private:
 	void transformImpl(T& tuple, EmptySequence);
 	template<typename T, std::size_t... I>
 	void transformImpl(T& tuple, IndexSequence<I...>);
-
-	std::size_t current = 0;
 };
 
 class Archival {
@@ -173,7 +174,14 @@ Archive& Archive::operator<<(const T& object)
 	return *this;
 }
 
-inline Archive& Archive::operator<<(const std::string& value)
+Archive& Archive::operator<<(const Archive& archive)
+{
+	auto data = archive.buffer;
+	auto index = archive.current;
+	std::copy(data.begin() + index, data.end(), std::back_inserter(this->buffer));
+}
+
+Archive& Archive::operator<<(const std::string& value)
 {
 	std::size_t size = value.size();
 	this->save(reinterpret_cast<const void*>(&size), sizeof(size));
@@ -217,7 +225,14 @@ Archive& Archive::operator>>(T& object)
 	return *this;
 }
 
-inline Archive& Archive::operator>>(std::string& value)
+Archive& Archive::operator>>(Archive& archive)
+{
+	auto data = this->buffer;
+	auto index = this->current;
+	std::copy(data.begin() + index, data.end(), std::back_inserter(archive.buffer));
+}
+
+Archive& Archive::operator>>(std::string& value)
 {
 	std::size_t size;
 	this->load(reinterpret_cast<void*>(&size), sizeof(size));

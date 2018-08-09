@@ -32,6 +32,7 @@ ENDFUNCTION(BUILD_TEST)
 SET(TEST_SRCS ${LIB_DIR}/klay/testbench.cpp
 			  ${RMI_DIR}/audit/logger.cpp
 			  ${RMI_DIR}/audit/console.cpp
+			  ${RMI_DIR}/application/server.cpp
 			  ${RMI_DIR}/transport/socket.cpp
 			  ${RMI_DIR}/transport/message.cpp
 			  ${RMI_DIR}/transport/connection.cpp
@@ -41,6 +42,7 @@ SET(TEST_SRCS ${LIB_DIR}/klay/testbench.cpp
 			  ${TEST_DIR}/protocol/test-functor.cpp
 			  ${TEST_DIR}/stream/test-archive.cpp
 			  ${TEST_DIR}/audit/test-console.cpp
-			  ${TEST_DIR}/transport/test-connection.cpp)
+			  ${TEST_DIR}/transport/test-connection.cpp
+			  ${TEST_DIR}/application/test-server.cpp)
 
 BUILD_TEST(${PROJECT_NAME} "${TEST_SRCS}")

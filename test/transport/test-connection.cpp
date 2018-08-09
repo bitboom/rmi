@@ -25,11 +25,7 @@
 
 #include <klay/testbench.h>
 
-#include <memory>
-#include <limits>
 #include <string>
-#include <cassert>
-#include <iostream>
 #include <thread>
 
 using namespace rmi::transport;
