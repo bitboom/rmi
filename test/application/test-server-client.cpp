@@ -14,12 +14,12 @@
  *  limitations under the License
  */
 /*
- * @file        test-connection.cpp
+ * @file        test-server-client.cpp
  * @author      Sangwan Kwon (sangwan.kwon@samsung.com)
  */
 
 #include "application/server.hxx"
-#include "transport/connection.hxx"
+#include "application/client.hxx"
 
 #include <klay/testbench.h>
 
@@ -32,6 +32,7 @@
 using namespace rmi::application;
 using namespace rmi::transport;
 
+// Server side methods
 struct Foo {
 	bool setName(const std::string& name)
 	{
@@ -47,10 +48,11 @@ struct Foo {
 	std::string name;
 };
 
-TESTCASE(SERVER)
+TESTCASE(SERVER_CLIENT)
 {
 	std::string sockPath = ("./server");
 
+	// server-side 
 	Server server;
 	server.listen(sockPath);
 
@@ -58,32 +60,18 @@ TESTCASE(SERVER)
 	server.expose(foo, "Foo::setName", &Foo::setName);
 	server.expose(foo, "Foo::getName", &Foo::getName);
 
-	std::string param = "RMI-TEST";
-
 	auto client = std::thread([&]() {
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 
-		Connection conn(sockPath);
-		{
-			Message msg(MessageType::MethodCall, "Foo::setName");
-			msg.enclose(param);
+		// client-side
+		Client client(sockPath);
 
-			Message reply = conn.request(msg);
-			bool ret = true;
-			reply.disclose(ret);
+		std::string param = "RMI-TEST";
+		bool ret = client.invoke<bool>("Foo::setName", param);
+		TEST_EXPECT_LAMBDA(CLIENT_SIDE, ret, false);
 
-			TEST_EXPECT_LAMBDA(CLIENT_SIDE, ret, false);
-		}
-
-		{
-			Message msg(MessageType::MethodCall, "Foo::getName");
-
-			Message reply = conn.request(msg);
-			std::string ret;
-			reply.disclose(ret);
-
-			TEST_EXPECT_LAMBDA(CLIENT_SIDE, ret, param);
-		}
+		std::string name = client.invoke<std::string>("Foo::getName");
+		TEST_EXPECT_LAMBDA(CLIENT_SIDE, name, param);
 
 		server.stop();
 	});
