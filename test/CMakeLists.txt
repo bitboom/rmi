@@ -6,6 +6,7 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
 
 SET(LIB_DIR ${PROJECT_SOURCE_DIR}/../lib)
 SET(RMI_DIR ${PROJECT_SOURCE_DIR}/../src)
+SET(TEST_DIR ${PROJECT_SOURCE_DIR})
 
 INCLUDE_DIRECTORIES(${LIB_DIR} ${RMI_DIR})
 
@@ -29,8 +30,20 @@ FUNCTION(BUILD_TEST TEST_NAME TEST_SRCS)
 ENDFUNCTION(BUILD_TEST)
 
 SET(TEST_SRCS ${LIB_DIR}/klay/testbench.cpp
-			  test-main.cpp
-			  test-archive.cpp
-			  test-functor.cpp)
+			  ${RMI_DIR}/audit/logger.cpp
+			  ${RMI_DIR}/audit/console.cpp
+			  ${RMI_DIR}/application/server.cpp
+			  ${RMI_DIR}/application/client.cpp
+			  ${RMI_DIR}/transport/socket.cpp
+			  ${RMI_DIR}/transport/message.cpp
+			  ${RMI_DIR}/transport/connection.cpp
+			  ${RMI_DIR}/event/eventfd.cpp
+			  ${RMI_DIR}/event/mainloop.cpp
+			  ${TEST_DIR}/test-main.cpp
+			  ${TEST_DIR}/protocol/test-functor.cpp
+			  ${TEST_DIR}/stream/test-archive.cpp
+			  ${TEST_DIR}/audit/test-console.cpp
+			  ${TEST_DIR}/transport/test-connection.cpp
+			  ${TEST_DIR}/application/test-server-client.cpp)
 
 BUILD_TEST(${PROJECT_NAME} "${TEST_SRCS}")

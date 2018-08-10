@@ -14,38 +14,38 @@
  *  limitations under the License
  */
 /*
- * @file        index-sequence.hxx
- * @author      Sangwan Kwon (sangwan.kwon@samsung.com)
- * @brief       Generate index sequence.
+ * @file        eventfd.hxx
+ * @author      Jaemin Ryu (jm77.ryu@samsung.com)
+ *              Sangwan Kwon (sangwan.kwon@samsung.com)
+ * @brief       A file descriptor for event notification.
  */
 
 #pragma once
 
-#include <cstddef>
+#include <sys/eventfd.h>
 
 namespace rmi {
-namespace protocol {
+namespace event {
 
-struct EmptySequence {};
+class EventFD final {
+public:
+	explicit EventFD(unsigned int initval = 0, int flags = EFD_SEMAPHORE | EFD_CLOEXEC);
+	~EventFD();
 
-template<std::size_t...>
-struct IndexSequence {};
+	EventFD(const EventFD&) = delete;
+	EventFD& operator=(const EventFD&) = delete;
 
-namespace {
+	EventFD(EventFD&&) = delete;
+	EventFD& operator=(EventFD&&) = delete;
 
-template<std::size_t N, std::size_t... S>
-struct SequenceExpansion : SequenceExpansion<N-1, N-1, S...> {};
+	void send(void);
+	void receive(void);
 
-template<std::size_t... S>
-struct SequenceExpansion<0, S...> { using Type = IndexSequence<S...>; };
+	int getFd(void) const noexcept;
 
-template<>
-struct SequenceExpansion<0> { using Type = EmptySequence; };
+private:
+	int fd;
+};
 
-} // anonymous namespace
-
-template<std::size_t N>
-using make_index_sequence = typename SequenceExpansion<N>::Type;
-
-} // namespace protocol
+} // namespace event
 } // namespace rmi

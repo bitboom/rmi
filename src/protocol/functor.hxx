@@ -27,11 +27,13 @@
 #include <stdexcept>
 
 #include "function.hxx"
-#include "archive.hxx"
-#include "index-sequence.hxx"
+
+#include "../stream/archive.hxx"
 
 namespace rmi {
 namespace protocol {
+
+using namespace rmi::stream;
 
 struct AbstractFunctor {
 	template<typename R, typename...Args>
