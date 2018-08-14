@@ -29,8 +29,6 @@
 #include <chrono>
 #include <cstring>
 
-#include <iostream>
-
 using namespace rmi::transport;
 
 TESTCASE(SOCKET_READ_WRITE)
@@ -49,10 +47,10 @@ TESTCASE(SOCKET_READ_WRITE)
 
 		// Send input to server.
 		Socket connected = Socket::connect(sockPath);
-		connected.write(&input);
+		connected.send(&input);
 
 		// Recv input2 from server.
-		connected.read(&output2);
+		connected.recv(&output2);
 
 		TEST_EXPECT_LAMBDA(CLIENT_SIDE, input2, output2);
 	});
@@ -60,11 +58,11 @@ TESTCASE(SOCKET_READ_WRITE)
 	Socket accepted = socket.accept();
 
 	// Recv input from client.
-	accepted.read(&output);
+	accepted.recv(&output);
 	TEST_EXPECT(input, output);
 
 	// Send input2 to client.
-	accepted.write(&input2);
+	accepted.send(&input2);
 
 	if (client.joinable())
 		client.join();
@@ -86,10 +84,10 @@ TESTCASE(SOCKET_ABSTRACT)
 
 		// Send input to server.
 		Socket connected = Socket::connect(sockPath);
-		connected.write(&input);
+		connected.send(&input);
 
 		// Recv input2 from server.
-		connected.read(&output2);
+		connected.recv(&output2);
 
 		TEST_EXPECT_LAMBDA(CLIENT_SIDE, input2, output2);
 	});
@@ -97,11 +95,11 @@ TESTCASE(SOCKET_ABSTRACT)
 	Socket accepted = socket.accept();
 
 	// Recv input from client.
-	accepted.read(&output);
+	accepted.recv(&output);
 	TEST_EXPECT(input, output);
 
 	// Send input2 to client.
-	accepted.write(&input2);
+	accepted.send(&input2);
 
 	if (client.joinable())
 		client.join();

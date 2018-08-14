@@ -23,34 +23,34 @@
 #pragma once
 
 #include <string>
-#include <atomic>
 #include <vector>
 
 #include "../stream/archive.hxx"
 
-using namespace rmi::stream;
-
 namespace rmi {
 namespace transport {
 
-enum MessageType : unsigned int {
-	Invalid,
-	MethodCall,
-	Reply,
-	Error,
-	Signal
-};
+using Buffer = rmi::stream::Archive;
 
-struct MessageHeader {
-	unsigned int id;
-	unsigned int type;
-	size_t length;
-};
+struct Message final {
+	enum Type : unsigned int {
+		Invalid,
+		MethodCall,
+		Reply,
+		Error,
+		Signal
+	};
 
-class Message final {
-public:
+	struct Header {
+		unsigned int id;
+		unsigned int type;
+		size_t length;
+	};
+
 	explicit Message(void) = default;
 	explicit Message(unsigned int type, const std::string& signature);
+	explicit Message(Header header);
+
 	~Message(void) noexcept = default;
 
 	Message(const Message&) = default;
@@ -59,55 +59,29 @@ public:
 	Message& operator=(const Message&) = default;
 	Message& operator=(Message&&) = default;
 
-	template<typename T>
-	void encode(const T& device);
-	template<typename T>
-	void decode(const T& device);
-
 	template<typename... Args>
 	void enclose(Args&&... args);
 	template<typename... Args>
 	void disclose(Args&... args);
 
-	MessageHeader header;
+	std::size_t size(void) const noexcept;
+
+	Header header;
 	std::string signature;
-	Archive archive;
-
-private:
-	static std::atomic<unsigned int> sequence;
+	Buffer buffer;
 };
-
-template<typename T>
-void Message::encode(const T& device)
-{
-	header.id = sequence++;
-	header.length = this->archive.size();
-
-	device.write(&header);
-	device.write(this->archive.get(), header.length);
-}
-
-template<typename T>
-void Message::decode(const T& device)
-{
-	MessageHeader header;
-	device.read(&header);
-
-	this->archive.reserve(header.length);
-	device.read(this->archive.get(), header.length);
-	this->disclose(this->signature);
-}
 
 template<typename... Args>
 void Message::enclose(Args&&... args)
 {
-	this->archive.pack(std::forward<Args>(args)...);
+	this->buffer.pack(std::forward<Args>(args)...);
+	header.length = this->buffer.size();
 }
 
 template<typename... Args>
 void Message::disclose(Args&... args)
 {
-	this->archive.unpack(args...);
+	this->buffer.unpack(args...);
 }
 
 } // namespace transport

@@ -14,9 +14,10 @@
  *  limitations under the License
  */
 /*
- * @file        messabe.cpp
+ * @file        message.cpp
  * @author      Jaemin Ryu (jm77.ryu@samsung.com)
  *              Sangwan Kwon (sangwan.kwon@samsung.com)
+ * @brief       Implementaion of message.
  */
 
 #include "message.hxx"
@@ -24,13 +25,21 @@
 namespace rmi {
 namespace transport {
 
-std::atomic<unsigned int> Message::sequence(0);
-
 Message::Message(unsigned int type, const std::string& signature) :
 	header({0, type, signature.size()}),
 	signature(signature)
 {
 	this->enclose(signature);
+}
+
+Message::Message(Header header) : header(header)
+{
+	this->buffer.reserve(this->header.length);
+}
+
+std::size_t Message::size(void) const noexcept
+{
+	return this->header.length;
 }
 
 } // namespace transport

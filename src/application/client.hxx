@@ -54,7 +54,7 @@ private:
 template<typename R, typename... Args>
 R Client::invoke(const std::string& name, Args&&... args)
 {
-	Message msg(MessageType::MethodCall, name);
+	Message msg(Message::Type::MethodCall, name);
 	msg.enclose(std::forward<Args>(args)...);
 
 	std::lock_guard<std::mutex> lock(this->mutex);

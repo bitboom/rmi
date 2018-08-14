@@ -108,9 +108,9 @@ void Server::dispatch(const std::shared_ptr<Connection>& connection)
 		throw std::runtime_error("Faild to find function.");
 
 	auto functor = iter->second;
-	auto result = functor->invoke(request.archive);
+	auto result = functor->invoke(request.buffer);
 
-	Message reply(MessageType::Reply, funcName);
+	Message reply(Message::Type::Reply, funcName);
 	reply.enclose(result);
 
 	connection->send(reply);

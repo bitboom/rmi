@@ -44,11 +44,11 @@ public:
 	Connection& operator=(Connection&&) = default;
 
 	// server-side
-	void send(Message& message) const;
+	void send(Message& message);
 	Message recv(void) const;
 
 	// client-side
-	Message request(Message& message) const;
+	Message request(Message& message);
 
 	int getFd(void) const noexcept;
 
@@ -56,8 +56,10 @@ private:
 	transport::Socket socket;
 
 	// SOCK_STREAM are full-duplex byte streams
-	mutable std::mutex receiveMutex;
-	mutable std::mutex transmitMutex;
+	mutable std::mutex sendMutex;
+	mutable std::mutex recvMutex;
+
+	unsigned int sequence = 0;
 };
 
 } // namespace transport

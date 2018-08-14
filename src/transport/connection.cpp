@@ -36,23 +36,30 @@ Connection::Connection(const std::string& path) :
 {
 }
 
-void Connection::send(Message& message) const
+void Connection::send(Message& message)
 {
-	std::lock_guard<std::mutex> lock(this->transmitMutex);
-	message.encode(this->socket);
+	std::lock_guard<std::mutex> lock(this->sendMutex);
+
+	message.header.id = this->sequence++;
+	this->socket.send(&message.header);
+
+	this->socket.send(message.buffer.get(), message.header.length);
 }
 
 Message Connection::recv(void) const
 {
-	std::lock_guard<std::mutex> lock(this->receiveMutex);
+	std::lock_guard<std::mutex> lock(this->recvMutex);
+	Message::Header header;
+	this->socket.recv(&header);
 
-	Message reply;
-	reply.decode(this->socket);
+	Message message(header);
+	this->socket.recv(message.buffer.get(), message.size());
+	message.disclose(message.signature);
 
-	return reply;
+	return message;
 }
 
-Message Connection::request(Message& message) const
+Message Connection::request(Message& message)
 {
 	this->send(message);
 	return this->recv();
