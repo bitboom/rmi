@@ -27,7 +27,7 @@ namespace transport {
 std::atomic<unsigned int> Message::sequence(0);
 
 Message::Message(unsigned int type, const std::string& signature) :
-	header({0, type, archive.buffer.size()}),
+	header({0, type, signature.size()}),
 	signature(signature)
 {
 	this->enclose(signature);

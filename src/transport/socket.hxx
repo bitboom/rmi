@@ -22,9 +22,12 @@
 
 #pragma once
 
+#include <cstddef>
 #include <string>
-#include <iostream>
 #include <stdexcept>
+
+#include <unistd.h>
+#include <errno.h>
 
 namespace rmi {
 namespace transport {
@@ -44,8 +47,10 @@ public:
 	Socket accept(void) const;
 	static Socket connect(const std::string& path);
 
-	void write(const void* buffer, const size_t size) const;
-	void read(void* buffer, const size_t size) const;
+	template<typename T>
+	void write(const T* buffer, const std::size_t size = sizeof(T)) const;
+	template<typename T>
+	void read(T* buffer, const std::size_t size = sizeof(T)) const;
 
 	int getFd(void) const noexcept;
 
@@ -54,6 +59,38 @@ private:
 
 	int fd;
 };
+
+template<typename T>
+void Socket::write(const T *buffer, const std::size_t size) const
+{
+	std::size_t written = 0;
+	while (written < size) {
+		auto rest = reinterpret_cast<const unsigned char*>(buffer) + written;
+		auto bytes = ::write(this->fd, rest, size - written);
+		if (bytes >= 0)
+			written += bytes;
+		else if (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR)
+			continue;
+		else
+			std::runtime_error("Failed to write.");
+	}
+}
+
+template<typename T>
+void Socket::read(T *buffer, const std::size_t size) const
+{
+	std::size_t readen = 0;
+	while (readen < size) {
+		auto rest = reinterpret_cast<unsigned char*>(buffer) + readen;
+		auto bytes = ::read(this->fd, rest, size - readen);
+		if (bytes >= 0)
+			readen += bytes;
+		else if (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR)
+			continue;
+		else
+			std::runtime_error("Failed to read.");
+	}
+}
 
 } // namespace transport
 } // namespace rmi

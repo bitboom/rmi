@@ -81,20 +81,20 @@ template<typename T>
 void Message::encode(const T& device)
 {
 	header.id = sequence++;
-	header.length = archive.buffer.size();
+	header.length = this->archive.size();
 
-	device.write(&header, sizeof(header));
-	device.write(this->archive.buffer.data(), header.length);
+	device.write(&header);
+	device.write(this->archive.get(), header.length);
 }
 
 template<typename T>
 void Message::decode(const T& device)
 {
 	MessageHeader header;
-	device.read(&header, sizeof(header));
+	device.read(&header);
 
-	this->archive.buffer.reserve(header.length);
-	device.read(this->archive.buffer.data(), header.length);
+	this->archive.reserve(header.length);
+	device.read(this->archive.get(), header.length);
 	this->disclose(this->signature);
 }
 
