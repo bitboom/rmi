@@ -31,7 +31,7 @@
 #include "../stream/archive.hxx"
 
 namespace rmi {
-namespace protocol {
+namespace klass {
 
 using namespace rmi::stream;
 
@@ -50,7 +50,7 @@ template<typename R, typename K, typename... Ps>
 class Functor : public AbstractFunctor {
 public:
 	using Klass = K;
-	using MemFunc = klass::Function<R, K, Ps...>;
+	using MemFunc = Function<R, K, Ps...>;
 	using Invokable = std::function<R(K&, Ps...)>;
 
 	explicit Functor(std::shared_ptr<Klass> instance, MemFunc memFunc);
@@ -144,7 +144,7 @@ Functor<R, K, Ps...> make_functor(std::shared_ptr<K> instance, R (K::* member)(P
 	if (instance == nullptr)
 		throw std::invalid_argument("Instance can't be nullptr.");
 
-	return Functor<R, K, Ps...>(instance, klass::make_function(member));
+	return Functor<R, K, Ps...>(instance, make_function(member));
 }
 
 template<typename R, typename K, typename... Ps>
@@ -154,8 +154,8 @@ std::shared_ptr<Functor<R, K, Ps...>> make_functor_ptr(std::shared_ptr<K> instan
 	if (instance == nullptr)
 		throw std::invalid_argument("Instance can't be nullptr.");
 
-	return std::make_shared<Functor<R, K, Ps...>>(instance, klass::make_function(member));
+	return std::make_shared<Functor<R, K, Ps...>>(instance, make_function(member));
 }
 
-} // namespace protocol
+} // namespace klass
 } // namespace rmi

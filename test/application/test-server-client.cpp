@@ -52,7 +52,7 @@ TESTCASE(SERVER_CLIENT)
 {
 	std::string sockPath = ("./server");
 
-	// server-side 
+	// server-side
 	Server server;
 	server.listen(sockPath);
 

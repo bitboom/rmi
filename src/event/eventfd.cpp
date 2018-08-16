@@ -63,4 +63,4 @@ int EventFD::getFd(void) const noexcept
 }
 
 } // namespace event
-} // namespace rmi 
+} // namespace rmi

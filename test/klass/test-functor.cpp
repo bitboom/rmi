@@ -18,7 +18,7 @@
  * @author      Sangwan Kwon (sangwan.kwon@samsung.com)
  */
 
-#include "protocol/functor.hxx"
+#include "klass/functor.hxx"
 #include "stream/archive.hxx"
 
 #include <klay/testbench.h>
@@ -26,7 +26,7 @@
 #include <iostream>
 #include <memory>
 
-using namespace rmi::protocol;
+using namespace rmi::klass;
 using namespace rmi::stream;
 
 struct Foo {

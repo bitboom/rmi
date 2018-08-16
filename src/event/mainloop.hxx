@@ -50,7 +50,7 @@ public:
 	Mainloop(Mainloop&&) = delete;
 	Mainloop& operator=(Mainloop&&) = delete;
 
-	void addHandler(const int fd, OnEvent&& onEvent, OnError&& = nullptr); 
+	void addHandler(const int fd, OnEvent&& onEvent, OnError&& = nullptr);
 	void removeHandler(const int fd);
 
 	void run(int timeout = -1);
