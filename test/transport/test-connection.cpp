@@ -62,7 +62,7 @@ TESTCASE(SOCKET_COMMUNICATION)
 		TEST_EXPECT_LAMBDA(SERVER_SIDE, request2, recv2);
 		TEST_EXPECT_LAMBDA(SERVER_SIDE, request3, recv3);
 
-		Message reply(MessageType::Reply, responseSignature);
+		Message reply(Message::Type::Reply, responseSignature);
 		reply.enclose(response1, response2, response3);
 		conn.send(reply);
 
@@ -75,7 +75,7 @@ TESTCASE(SOCKET_COMMUNICATION)
 
 	// client-side
 	Connection conn(sockPath);
-	Message msg(MessageType::Signal, requestSignature);
+	Message msg(Message::Type::Signal, requestSignature);
 	msg.enclose(request1, request2, request3);
 
 	Message reply = conn.request(msg);

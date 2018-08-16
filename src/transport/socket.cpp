@@ -22,15 +22,13 @@
 
 #include "socket.hxx"
 
-#include <unistd.h>
+#include <fstream>
+#include <iostream>
 #include <fcntl.h>
-#include <errno.h>
 
 #include <sys/un.h>
 #include <sys/stat.h>
 #include <sys/socket.h>
-
-#include "../audit/console.hxx"
 
 namespace rmi {
 namespace transport {
@@ -47,7 +45,6 @@ void set_cloexec(int fd)
 
 Socket::Socket(int fd) noexcept : fd(fd)
 {
-	CONSOLE_D("Socket created: " << fd);
 }
 
 Socket::Socket(const std::string& path)
@@ -67,21 +64,16 @@ Socket::Socket(const std::string& path)
 
 	if (addr.sun_path[0] == '@')
 		addr.sun_path[0] = '\0';
-	else
-		::unlink(path.c_str());
+
+	struct stat buf;
+	if (::stat(path.c_str(), &buf) == 0)
+		if (::unlink(path.c_str()) == -1)
+			throw std::runtime_error("Failed to remove exist socket.");
 
 	if (::bind(fd, reinterpret_cast<::sockaddr*>(&addr), sizeof(::sockaddr_un)) == -1) {
 		::close(fd);
 		throw std::runtime_error("Failed to bind.");
 	}
-
-/*
-	int optval = 1;
-	if (::setsockopt(fd, SOL_SOCKET, SO_PASSCRED, &optval, sizeof(optval)) == -1) {
-		::close(fd);
-		throw std::runtime_error("Failed to set socket-option.");
-	}
-*/
 
 	if (::listen(fd, MAX_BACKLOG_SIZE) == -1) {
 		::close(fd);
@@ -109,7 +101,6 @@ Socket& Socket::operator=(Socket&& that)
 
 Socket::~Socket(void)
 {
-	CONSOLE_D("Socket closed: " << fd);
 	if (fd != -1)
 		::close(fd);
 }
@@ -154,38 +145,6 @@ Socket Socket::connect(const std::string& path)
 int Socket::getFd(void) const noexcept
 {
 	return this->fd;
-}
-
-void Socket::read(void *buffer, const size_t size) const
-{
-	size_t total = 0;
-
-	while (total < size) {
-		auto rest = reinterpret_cast<unsigned char*>(buffer) + total;
-		int bytes = ::read(this->fd, rest, size - total);
-		if (bytes >= 0)
-			total += bytes;
-		else if (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR)
-			continue;
-		else
-			std::runtime_error("Failed to read.");
-	}
-}
-
-void Socket::write(const void *buffer, const size_t size) const
-{
-	size_t written = 0;
-
-	while (written < size) {
-		auto rest = reinterpret_cast<const unsigned char*>(buffer) + written;
-		int bytes = ::write(this->fd, rest, size - written);
-		if (bytes >= 0)
-			written += bytes;
-		else if (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR)
-			continue;
-		else
-			std::runtime_error("Failed to write.");
-	}
 }
 
 } // namespace transport

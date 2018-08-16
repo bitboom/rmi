@@ -26,10 +26,7 @@
 
 #include <string>
 #include <type_traits>
-#include <cstring>
 #include <vector>
-#include <algorithm>
-#include <iterator>
 #include <memory>
 #include <tuple>
 
@@ -52,15 +49,16 @@ public:
 
 	template<typename Front, typename... Rest>
 	void pack(const Front& front, const Rest&... rest);
-	inline void pack(void);
+	void pack(void);
 
 	template<typename Front, typename... Rest>
 	void unpack(Front& front, Rest&... rest);
-	inline void unpack(void);
+	void unpack(void);
 
 	template<typename... Ts>
 	void transform(std::tuple<Ts...>& tuple);
 
+	// serialize method
 	template<typename T, IsFundamental<T> = 0>
 	Archive& operator<<(const T& value);
 	template<typename T, IsArchival<T> = 0>
@@ -69,9 +67,10 @@ public:
 	Archive& operator<<(const std::unique_ptr<T>& pointer);
 	template<typename T>
 	Archive& operator<<(const std::shared_ptr<T>& pointer);
-	inline Archive& operator<<(const std::string& value);
-	inline Archive& operator<<(const Archive& archive);
+	Archive& operator<<(const std::string& value);
+	Archive& operator<<(const Archive& archive);
 
+	// deserialize method
 	template<typename T, IsFundamental<T> = 0>
 	Archive& operator>>(T& value);
 	template<typename T, IsArchival<T> = 0>
@@ -80,21 +79,25 @@ public:
 	Archive& operator>>(std::unique_ptr<T>& pointer);
 	template<typename T>
 	Archive& operator>>(std::shared_ptr<T>& pointer);
-	inline Archive& operator>>(std::string& value);
-	inline Archive& operator>>(Archive& archive);
+	Archive& operator>>(std::string& value);
+	Archive& operator>>(Archive& archive);
 
-	std::vector<unsigned char> buffer;
-	std::size_t current = 0;
+	unsigned char* get(void) noexcept;
+	std::size_t size(void) const noexcept;
+	void reserve(std::size_t size) noexcept;
 
 protected:
-	virtual inline void save(const void* bytes, std::size_t size);
-	virtual inline void load(void* bytes, std::size_t size);
+	virtual void save(const void* bytes, std::size_t size);
+	virtual void load(void* bytes, std::size_t size);
 
 private:
 	template<typename T>
 	void transformImpl(T& tuple, EmptySequence);
 	template<typename T, std::size_t... I>
 	void transformImpl(T& tuple, IndexSequence<I...>);
+
+	std::vector<unsigned char> buffer;
+	std::size_t current = 0;
 };
 
 class Archival {
@@ -112,20 +115,11 @@ void Archive::pack(const Front& front, const Rest&... rest)
 	this->pack(rest...);
 }
 
-void Archive::pack(void)
-{
-}
-
-
 template<typename Front, typename... Rest>
 void Archive::unpack(Front& front, Rest&... rest)
 {
 	*this >> front;
 	this->unpack(rest...);
-}
-
-void Archive::unpack(void)
-{
 }
 
 template<typename... Ts>
@@ -174,23 +168,6 @@ Archive& Archive::operator<<(const T& object)
 	return *this;
 }
 
-Archive& Archive::operator<<(const Archive& archive)
-{
-	auto data = archive.buffer;
-	auto index = archive.current;
-	std::copy(data.begin() + index, data.end(), std::back_inserter(this->buffer));
-}
-
-Archive& Archive::operator<<(const std::string& value)
-{
-	std::size_t size = value.size();
-	this->save(reinterpret_cast<const void*>(&size), sizeof(size));
-
-	this->save(reinterpret_cast<const void*>(value.c_str()), value.size());
-
-	return *this;
-}
-
 template<typename T, IsFundamental<T>>
 Archive& Archive::operator>>(T& value)
 {
@@ -223,38 +200,6 @@ Archive& Archive::operator>>(T& object)
 	object.unpack(*this);
 
 	return *this;
-}
-
-Archive& Archive::operator>>(Archive& archive)
-{
-	auto data = this->buffer;
-	auto index = this->current;
-	std::copy(data.begin() + index, data.end(), std::back_inserter(archive.buffer));
-}
-
-Archive& Archive::operator>>(std::string& value)
-{
-	std::size_t size;
-	this->load(reinterpret_cast<void*>(&size), sizeof(size));
-
-	value.resize(size);
-	this->load(reinterpret_cast<void*>(&value.front()), size);
-
-	return *this;
-}
-
-void Archive::save(const void* bytes, std::size_t size)
-{
-	auto binary = reinterpret_cast<unsigned char*>(const_cast<void*>(bytes));
-	std::vector<unsigned char> next(binary, binary + size) ;
-
-	std::copy(next.begin(), next.end(), std::back_inserter(this->buffer));
-}
-
-void Archive::load(void* bytes, std::size_t size)
-{
-	::memcpy(bytes, reinterpret_cast<void*>(this->buffer.data() + current), size);
-	current += size;
 }
 
 } // namespace stream

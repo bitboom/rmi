@@ -34,6 +34,7 @@ SET(TEST_SRCS ${LIB_DIR}/klay/testbench.cpp
 			  ${RMI_DIR}/audit/console.cpp
 			  ${RMI_DIR}/application/server.cpp
 			  ${RMI_DIR}/application/client.cpp
+			  ${RMI_DIR}/stream/archive.cpp
 			  ${RMI_DIR}/transport/socket.cpp
 			  ${RMI_DIR}/transport/message.cpp
 			  ${RMI_DIR}/transport/connection.cpp
@@ -43,6 +44,7 @@ SET(TEST_SRCS ${LIB_DIR}/klay/testbench.cpp
 			  ${TEST_DIR}/protocol/test-functor.cpp
 			  ${TEST_DIR}/stream/test-archive.cpp
 			  ${TEST_DIR}/audit/test-console.cpp
+			  ${TEST_DIR}/transport/test-socket.cpp
 			  ${TEST_DIR}/transport/test-connection.cpp
 			  ${TEST_DIR}/application/test-server-client.cpp)
 

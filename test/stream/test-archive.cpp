@@ -26,7 +26,6 @@
 #include <limits>
 #include <string>
 #include <cassert>
-#include <iostream>
 
 using namespace rmi::stream;
 
@@ -221,6 +220,30 @@ TESTCASE(SHARED_PTR)
 	archive >> output;
 
 	TEST_EXPECT(*input, *output);
+}
+
+TESTCASE(Archive)
+{
+	std::string input1 = "Archive string test1";
+	std::string input2 = "Archive string test2";
+	std::string input3 = "Archive string test3";
+
+	Archive archive1, archive2, archive3;
+	archive1 << input1;
+	archive2 << input2;
+	archive3 << input3;
+
+	archive1 << archive2;
+	archive1 >> archive3;
+
+	std::string output1;
+	std::string output2;
+	std::string output3;
+	archive3 >> output1 >> output2 >> output3;
+
+	TEST_EXPECT(output1, input3);
+	TEST_EXPECT(output2, input1);
+	TEST_EXPECT(output3, input2);
 }
 
 TESTCASE(PARAMETER_PACK)

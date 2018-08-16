@@ -67,6 +67,9 @@ auto Function<R, K, Ps...>::get(void) noexcept -> const Pointer&
 template<typename R, typename K, typename... Ps>
 Function<R, K, Ps...> make_function(R (K::* member)(Ps...))
 {
+	constexpr bool notVoid = !(std::is_same<R, void>::value);
+	static_assert(notVoid, "Return type cannot be void.");
+
 	using IsValid = std::is_member_function_pointer<decltype(member)>;
 	static_assert(IsValid::value, "Pamameter should be member function type.");
 
