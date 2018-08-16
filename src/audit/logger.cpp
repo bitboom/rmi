@@ -14,7 +14,7 @@
  *  limitations under the License
  */
 /*
- * @file        logger.hxx
+ * @file        logger.cpp
  * @author      Sangwan Kwon (sangwan.kwon@samsung.com)
  */
 

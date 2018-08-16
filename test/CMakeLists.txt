@@ -41,7 +41,7 @@ SET(TEST_SRCS ${LIB_DIR}/klay/testbench.cpp
 			  ${RMI_DIR}/event/eventfd.cpp
 			  ${RMI_DIR}/event/mainloop.cpp
 			  ${TEST_DIR}/test-main.cpp
-			  ${TEST_DIR}/protocol/test-functor.cpp
+			  ${TEST_DIR}/klass/test-functor.cpp
 			  ${TEST_DIR}/stream/test-archive.cpp
 			  ${TEST_DIR}/audit/test-console.cpp
 			  ${TEST_DIR}/transport/test-socket.cpp

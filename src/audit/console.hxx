@@ -48,20 +48,20 @@ protected:
 	 tokens)).str()
 
 #define CONSOLE_LOG(level, message)                       \
-	do {				                                  \
-			rmi::audit::Console console;                       \
+	do {                                                  \
+			rmi::audit::Console console;                  \
 			std::string pretty = PRETTY_MESSAGE(message); \
 			switch (level) {                              \
-			case rmi::audit::LogLevel::INFO:                   \
+			case rmi::audit::LogLevel::INFO:              \
 				console.info(pretty);                     \
 				break;                                    \
-			case rmi::audit::LogLevel::DEBUG:                  \
+			case rmi::audit::LogLevel::DEBUG:             \
 				console.debug(pretty);                    \
 				break;                                    \
-			case rmi::audit::LogLevel::WARNING:                \
+			case rmi::audit::LogLevel::WARNING:           \
 				console.warning(pretty);                  \
 				break;                                    \
-			case rmi::audit::LogLevel::ERROR:                  \
+			case rmi::audit::LogLevel::ERROR:             \
 			default:                                      \
 				console.error(pretty);                    \
 				break;                                    \

@@ -116,8 +116,8 @@ bool Mainloop::dispatch(int timeout) noexcept
 			if (iter == this->listener.end())
 				continue;
 
-			onEvent = iter->second.first; 
-			onError = iter->second.second; 
+			onEvent = iter->second.first;
+			onError = iter->second.second;
 		}
 
 		try {

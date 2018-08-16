@@ -27,12 +27,12 @@
 #include <mutex>
 #include <memory>
 
-#include "../protocol/functor.hxx"
+#include "../klass/functor.hxx"
 #include "../event/mainloop.hxx"
 #include "../transport/socket.hxx"
 #include "../transport/connection.hxx"
 
-using namespace rmi::protocol;
+using namespace rmi::klass;
 using namespace rmi::transport;
 using namespace rmi::event;
 
@@ -68,7 +68,7 @@ private:
 
 	Mainloop mainloop;
 
-	std::set<std::string> socketPaths; 
+	std::set<std::string> socketPaths;
 
 	std::mutex mutex;
 

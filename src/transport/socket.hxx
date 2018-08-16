@@ -36,7 +36,7 @@ class Socket {
 public:
 	explicit Socket(int fd) noexcept;
 	explicit Socket(const std::string& path);
-	virtual ~Socket(void); 
+	virtual ~Socket(void);
 
 	Socket(const Socket&) = delete;
 	Socket& operator=(const Socket&) = delete;

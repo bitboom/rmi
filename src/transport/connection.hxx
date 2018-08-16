@@ -17,7 +17,7 @@
  * @file        connection.hxx
  * @author      Jaemin Ryu (jm77.ryu@samsung.com)
  *              Sangwan Kwon (sangwan.kwon@samsung.com)
- * @brief       Define the socket communication session. 
+ * @brief       Define the socket communication session.
  */
 
 #pragma once

@@ -24,7 +24,7 @@
 #include <ostream>
 
 namespace rmi {
-namespace audit { 
+namespace audit {
 
 enum class Code {
 	BLACK = 30,

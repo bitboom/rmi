@@ -24,7 +24,6 @@
 #include <type_traits>
 
 namespace rmi {
-namespace protocol {
 namespace klass {
 
 template<typename T>
@@ -77,5 +76,4 @@ Function<R, K, Ps...> make_function(R (K::* member)(Ps...))
 }
 
 } // namespace klass
-} // namespace protocol
 } // namespace rmi
