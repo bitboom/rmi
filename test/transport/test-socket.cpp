@@ -20,8 +20,6 @@
 
 #include "transport/socket.hxx"
 
-#include <klay/testbench.h>
-
 #include <string>
 #include <vector>
 #include <limits>
@@ -29,9 +27,11 @@
 #include <chrono>
 #include <cstring>
 
+#include <gtest/gtest.h>
+
 using namespace rmi::transport;
 
-TESTCASE(SOCKET_READ_WRITE)
+TEST(TRANSPORT, SOCKET_READ_WRITE)
 {
 	std::string sockPath = "./sock";
 	Socket socket(sockPath);
@@ -52,14 +52,14 @@ TESTCASE(SOCKET_READ_WRITE)
 		// Recv input2 from server.
 		connected.recv(&output2);
 
-		TEST_EXPECT_LAMBDA(CLIENT_SIDE, input2, output2);
+		EXPECT_EQ(input2, output2);
 	});
 
 	Socket accepted = socket.accept();
 
 	// Recv input from client.
 	accepted.recv(&output);
-	TEST_EXPECT(input, output);
+	EXPECT_EQ(input, output);
 
 	// Send input2 to client.
 	accepted.send(&input2);
@@ -68,7 +68,7 @@ TESTCASE(SOCKET_READ_WRITE)
 		client.join();
 }
 
-TESTCASE(SOCKET_ABSTRACT)
+TEST(TRANSPORT, SOCKET_ABSTRACT)
 {
 	std::string sockPath = "@sock";
 	Socket socket(sockPath);
@@ -89,14 +89,14 @@ TESTCASE(SOCKET_ABSTRACT)
 		// Recv input2 from server.
 		connected.recv(&output2);
 
-		TEST_EXPECT_LAMBDA(CLIENT_SIDE, input2, output2);
+		EXPECT_EQ(input2, output2);
 	});
 
 	Socket accepted = socket.accept();
 
 	// Recv input from client.
 	accepted.recv(&output);
-	TEST_EXPECT(input, output);
+	EXPECT_EQ(input, output);
 
 	// Send input2 to client.
 	accepted.send(&input2);

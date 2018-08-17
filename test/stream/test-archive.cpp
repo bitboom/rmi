@@ -20,16 +20,16 @@
 
 #include "stream/archive.hxx"
 
-#include <klay/testbench.h>
-
 #include <memory>
 #include <limits>
 #include <string>
 #include <cassert>
 
+#include <gtest/gtest.h>
+
 using namespace rmi::stream;
 
-TESTCASE(SERIALIZER_FUNDAMENTAL_INT)
+TEST(STREAM, SERIALIZER_FUNDAMENTAL_INT)
 {
 	int input1 = std::numeric_limits<int>::lowest();
 	int input2 = std::numeric_limits<int>::max();
@@ -40,11 +40,11 @@ TESTCASE(SERIALIZER_FUNDAMENTAL_INT)
 	int output1, output2;
 	archive >> output1 >> output2;
 
-	TEST_EXPECT(input1, output1);
-	TEST_EXPECT(input2, output2);
+	EXPECT_EQ(input1, output1);
+	EXPECT_EQ(input2, output2);
 }
 
-TESTCASE(SERIALIZER_FUNDAMENTAL_FLOAT)
+TEST(STREAM, SERIALIZER_FUNDAMENTAL_FLOAT)
 {
 	float input1 = std::numeric_limits<float>::lowest();
 	float input2 = std::numeric_limits<float>::max();
@@ -55,11 +55,11 @@ TESTCASE(SERIALIZER_FUNDAMENTAL_FLOAT)
 	float output1, output2;
 	archive >> output1 >> output2;
 
-	TEST_EXPECT(input1, output1);
-	TEST_EXPECT(input2, output2);
+	EXPECT_EQ(input1, output1);
+	EXPECT_EQ(input2, output2);
 }
 
-TESTCASE(SERIALIZER_FUNDAMENTAL_DOUBLE)
+TEST(STREAM, SERIALIZER_FUNDAMENTAL_DOUBLE)
 {
 	double input1 = std::numeric_limits<double>::lowest();
 	double input2 = std::numeric_limits<double>::max();
@@ -70,11 +70,11 @@ TESTCASE(SERIALIZER_FUNDAMENTAL_DOUBLE)
 	double output1, output2;
 	archive >> output1 >> output2;
 
-	TEST_EXPECT(input1, output1);
-	TEST_EXPECT(input2, output2);
+	EXPECT_EQ(input1, output1);
+	EXPECT_EQ(input2, output2);
 }
 
-TESTCASE(SERIALIZER_FUNDAMENTAL_LONG_LONG_INT)
+TEST(STREAM, SERIALIZER_FUNDAMENTAL_LONG_LONG_INT)
 {
 	long long int input1 = std::numeric_limits<long long int>::lowest();
 	long long int input2 = std::numeric_limits<long long int>::max();
@@ -85,11 +85,11 @@ TESTCASE(SERIALIZER_FUNDAMENTAL_LONG_LONG_INT)
 	long long int output1, output2;
 	archive >> output1 >> output2;
 
-	TEST_EXPECT(input1, output1);
-	TEST_EXPECT(input2, output2);
+	EXPECT_EQ(input1, output1);
+	EXPECT_EQ(input2, output2);
 }
 
-TESTCASE(SERIALIZER_FUNDAMENTAL_BOOL)
+TEST(STREAM, SERIALIZER_FUNDAMENTAL_BOOL)
 {
 	bool input1 = true;
 	bool input2 = false;
@@ -100,11 +100,11 @@ TESTCASE(SERIALIZER_FUNDAMENTAL_BOOL)
 	bool output1, output2;
 	archive >> output1 >> output2;
 
-	TEST_EXPECT(input1, output1);
-	TEST_EXPECT(input2, output2);
+	EXPECT_EQ(input1, output1);
+	EXPECT_EQ(input2, output2);
 }
 
-TESTCASE(SERIALIZER_FUNDAMENTAL_CHAR)
+TEST(STREAM, SERIALIZER_FUNDAMENTAL_CHAR)
 {
 	char input1 = 'a';
 	char input2 = 'Z';
@@ -115,11 +115,11 @@ TESTCASE(SERIALIZER_FUNDAMENTAL_CHAR)
 	char output1, output2;
 	archive >> output1 >> output2;
 
-	TEST_EXPECT(input1, output1);
-	TEST_EXPECT(input2, output2);
+	EXPECT_EQ(input1, output1);
+	EXPECT_EQ(input2, output2);
 }
 
-TESTCASE(SERIALIZER_FUNDAMENTAL_NULLPTR)
+TEST(STREAM, SERIALIZER_FUNDAMENTAL_NULLPTR)
 {
 	std::nullptr_t input;
 
@@ -132,7 +132,7 @@ TESTCASE(SERIALIZER_FUNDAMENTAL_NULLPTR)
 	assert(input == output);
 }
 
-TESTCASE(SERIALIZER_FUNDAMENTAL_REFERENCE)
+TEST(STREAM, SERIALIZER_FUNDAMENTAL_REFERENCE)
 {
 	int input = std::numeric_limits<int>::max();
 	int& refInput = input;
@@ -144,8 +144,8 @@ TESTCASE(SERIALIZER_FUNDAMENTAL_REFERENCE)
 	int& refOutput = output;
 	archive >> refOutput;
 
-	TEST_EXPECT(input, output);
-	TEST_EXPECT(refInput, refOutput);
+	EXPECT_EQ(input, output);
+	EXPECT_EQ(refInput, refOutput);
 }
 
 struct Object : public Archival {
@@ -164,7 +164,7 @@ struct Object : public Archival {
 	std::string c = "str";
 };
 
-TESTCASE(ARCHIVAL)
+TEST(STREAM, ARCHIVAL)
 {
 	Object input;
 	input.a = 100;
@@ -177,12 +177,12 @@ TESTCASE(ARCHIVAL)
 	Object output;
 	archive >> output;
 
-	TEST_EXPECT(input.a, output.a);
-	TEST_EXPECT(input.b, output.b);
-	TEST_EXPECT(input.c, output.c);
+	EXPECT_EQ(input.a, output.a);
+	EXPECT_EQ(input.b, output.b);
+	EXPECT_EQ(input.c, output.c);
 }
 
-TESTCASE(STRING)
+TEST(STREAM, STRING)
 {
 	std::string input = "Archive string test";
 
@@ -192,10 +192,10 @@ TESTCASE(STRING)
 	std::string output;
 	archive >> output;
 
-	TEST_EXPECT(input, output);
+	EXPECT_EQ(input, output);
 }
 
-TESTCASE(UNIQUE_PTR)
+TEST(STREAM, UNIQUE_PTR)
 {
 	std::unique_ptr<bool> input(new bool(true));
 
@@ -205,10 +205,10 @@ TESTCASE(UNIQUE_PTR)
 	std::unique_ptr<bool> output;
 	archive >> output;
 
-	TEST_EXPECT(*input, *output);
+	EXPECT_EQ(*input, *output);
 }
 
-TESTCASE(SHARED_PTR)
+TEST(STREAM, SHARED_PTR)
 {
 	std::shared_ptr<std::string> input = std::make_shared<std::string>();
 	*input = "Archive string test";
@@ -219,10 +219,10 @@ TESTCASE(SHARED_PTR)
 	std::shared_ptr<std::string> output;
 	archive >> output;
 
-	TEST_EXPECT(*input, *output);
+	EXPECT_EQ(*input, *output);
 }
 
-TESTCASE(Archive)
+TEST(STREAM, Archive)
 {
 	std::string input1 = "Archive string test1";
 	std::string input2 = "Archive string test2";
@@ -241,12 +241,12 @@ TESTCASE(Archive)
 	std::string output3;
 	archive3 >> output1 >> output2 >> output3;
 
-	TEST_EXPECT(output1, input3);
-	TEST_EXPECT(output2, input1);
-	TEST_EXPECT(output3, input2);
+	EXPECT_EQ(output1, input3);
+	EXPECT_EQ(output2, input1);
+	EXPECT_EQ(output3, input2);
 }
 
-TESTCASE(PARAMETER_PACK)
+TEST(STREAM, PARAMETER_PACK)
 {
 	int input1 = std::numeric_limits<int>::max();
 	float input2 = std::numeric_limits<float>::max();
@@ -265,14 +265,14 @@ TESTCASE(PARAMETER_PACK)
 
 	archive.unpack(output1, output2, output3, output4, output5);
 
-	TEST_EXPECT(input1, output1);
-	TEST_EXPECT(input2, output2);
-	TEST_EXPECT(input3, output3);
-	TEST_EXPECT(input4, output4);
-	TEST_EXPECT(*input5, *output5);
+	EXPECT_EQ(input1, output1);
+	EXPECT_EQ(input2, output2);
+	EXPECT_EQ(input3, output3);
+	EXPECT_EQ(input4, output4);
+	EXPECT_EQ(*input5, *output5);
 }
 
-TESTCASE(PARAMETER_PACK_EMPTY)
+TEST(STREAM, PARAMETER_PACK_EMPTY)
 {
 	Archive archive;
 	archive.pack();
@@ -280,7 +280,7 @@ TESTCASE(PARAMETER_PACK_EMPTY)
 	archive.unpack();
 }
 
-TESTCASE(PARAMETER_PACK_TRANSFORM)
+TEST(STREAM, PARAMETER_PACK_TRANSFORM)
 {
 	int input1 = std::numeric_limits<int>::max();
 	float input2 = std::numeric_limits<float>::max();
@@ -301,14 +301,14 @@ TESTCASE(PARAMETER_PACK_TRANSFORM)
 	auto tuple = std::make_tuple(output1, output2, output3, output4, output5);
 	archive.transform(tuple);
 
-	TEST_EXPECT(input1, std::get<0>(tuple));
-	TEST_EXPECT(input2, std::get<1>(tuple));
-	TEST_EXPECT(input3, std::get<2>(tuple));
-	TEST_EXPECT(input4, std::get<3>(tuple));
-	TEST_EXPECT(*input5, *(std::get<4>(tuple)));
+	EXPECT_EQ(input1, std::get<0>(tuple));
+	EXPECT_EQ(input2, std::get<1>(tuple));
+	EXPECT_EQ(input3, std::get<2>(tuple));
+	EXPECT_EQ(input4, std::get<3>(tuple));
+	EXPECT_EQ(*input5, *(std::get<4>(tuple)));
 }
 
-TESTCASE(PARAMETER_PACK_TRANSFORM_EMPTY)
+TEST(STREAM, PARAMETER_PACK_TRANSFORM_EMPTY)
 {
 	auto tuple = std::make_tuple();
 	Archive archive;

@@ -20,11 +20,9 @@
 
 #include "audit/console.hxx"
 
-#include <klay/testbench.h>
+#include <gtest/gtest.h>
 
-#include <iostream>
-
-TESTCASE(CONCOLE_LOGGER_TEXT)
+TEST(AUDIT, CONCOLE_LOGGER_TEXT)
 {
 	CONSOLE_I("LogLevel - Info");
 	CONSOLE_D("LogLevel - Debug");
@@ -32,7 +30,7 @@ TESTCASE(CONCOLE_LOGGER_TEXT)
 	CONSOLE_E("LogLevel - Error");
 }
 
-TESTCASE(CONCOLE_LOGGER_ARGS)
+TEST(AUDIT, CONCOLE_LOGGER_ARGS)
 {
 	CONSOLE_I("LogLevel - Info: " << 1 << '2' << "3");
 	CONSOLE_D("LogLevel - Debug: " << 1 << '2' << "3");
