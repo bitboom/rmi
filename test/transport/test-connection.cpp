@@ -23,15 +23,15 @@
 #include "event/mainloop.hxx"
 #include "event/eventfd.hxx"
 
-#include <klay/testbench.h>
-
 #include <string>
 #include <thread>
+
+#include <gtest/gtest.h>
 
 using namespace rmi::transport;
 using namespace rmi::event;
 
-TESTCASE(SOCKET_COMMUNICATION)
+TEST(TRANSPORT, SOCKET_COMMUNICATION)
 {
 	std::string sockPath = ("./sock");
 
@@ -52,15 +52,15 @@ TESTCASE(SOCKET_COMMUNICATION)
 	auto onAccept = [&]() {
 		Connection conn(socket.accept());
 		Message request = conn.recv();
-		TEST_EXPECT_LAMBDA(SERVER_SIDE, requestSignature, request.signature);
+		EXPECT_EQ(requestSignature, request.signature);
 
 		int recv1;
 		bool recv2;
 		std::string recv3;
 		request.disclose(recv1, recv2, recv3);
-		TEST_EXPECT_LAMBDA(SERVER_SIDE, request1, recv1);
-		TEST_EXPECT_LAMBDA(SERVER_SIDE, request2, recv2);
-		TEST_EXPECT_LAMBDA(SERVER_SIDE, request3, recv3);
+		EXPECT_EQ(request1, recv1);
+		EXPECT_EQ(request2, recv2);
+		EXPECT_EQ(request3, recv3);
 
 		Message reply(Message::Type::Reply, responseSignature);
 		reply.enclose(response1, response2, response3);
@@ -79,15 +79,15 @@ TESTCASE(SOCKET_COMMUNICATION)
 	msg.enclose(request1, request2, request3);
 
 	Message reply = conn.request(msg);
-	TEST_EXPECT(reply.signature, responseSignature);
+	EXPECT_EQ(reply.signature, responseSignature);
 
 	int recv1;
 	bool recv2;
 	std::string recv3;
 	reply.disclose(recv1, recv2, recv3);
-	TEST_EXPECT(response1, recv1);
-	TEST_EXPECT(response2, recv2);
-	TEST_EXPECT(response3, recv3);
+	EXPECT_EQ(response1, recv1);
+	EXPECT_EQ(response2, recv2);
+	EXPECT_EQ(response3, recv3);
 
 	if (serverThread.joinable())
 		serverThread.join();

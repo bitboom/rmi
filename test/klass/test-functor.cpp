@@ -21,10 +21,10 @@
 #include "klass/functor.hxx"
 #include "stream/archive.hxx"
 
-#include <klay/testbench.h>
-
 #include <iostream>
 #include <memory>
+
+#include <gtest/gtest.h>
 
 using namespace rmi::klass;
 using namespace rmi::stream;
@@ -52,7 +52,7 @@ struct Foo {
 	std::string name;
 };
 
-TESTCASE(FUNCTOR)
+TEST(FUNCTOR, FUNCTOR)
 {
 	auto foo = std::make_shared<Foo>();
 	auto fooSetName = make_functor(foo, &Foo::setName);
@@ -63,18 +63,18 @@ TESTCASE(FUNCTOR)
 	std::string input = "Foo name";
 	bool ret = true;
 	ret = fooSetName(input);
-	TEST_EXPECT(ret, false);
+	EXPECT_EQ(ret, false);
 
 	std::string output = fooGetName();
-	TEST_EXPECT(output, input);
+	EXPECT_EQ(output, input);
 
 	std::string a("aaa"), b("bbb"), c("ccc");
 	ret = true;
 	ret = fooEcho(a, b, c);
-	TEST_EXPECT(ret, false);
+	EXPECT_EQ(ret, false);
 }
 
-TESTCASE(FUNCTOR_MAP)
+TEST(FUNCTOR, FUNCTOR_MAP)
 {
 	auto foo = std::make_shared<Foo>();
 
@@ -90,18 +90,18 @@ TESTCASE(FUNCTOR_MAP)
 	std::string input = "Foo name";
 	bool ret = true;
 	ret = fooSetNamePtr->invoke<bool>(input);
-	TEST_EXPECT(ret, false);
+	EXPECT_EQ(ret, false);
 
 	std::string output = fooGetNamePtr->invoke<std::string>();
-	TEST_EXPECT(output, input);
+	EXPECT_EQ(output, input);
 
 	std::string a("aaaa"), b("bbbb"), c("cccc");
 	ret = true;
 	ret = fooEchoPtr->invoke<bool>(a, b, c);
-	TEST_EXPECT(ret, false);
+	EXPECT_EQ(ret, false);
 }
 
-TESTCASE(ARCHIVE)
+TEST(FUNCTOR, ARCHIVE)
 {
 	auto foo = std::make_shared<Foo>();
 
@@ -116,5 +116,5 @@ TESTCASE(ARCHIVE)
 	auto result = fooEchoPtr->invoke(archive);
 	bool ret = true;
 	result >> ret;
-	TEST_EXPECT(ret, false);
+	EXPECT_EQ(ret, false);
 }

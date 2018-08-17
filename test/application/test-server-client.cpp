@@ -21,13 +21,13 @@
 #include "application/server.hxx"
 #include "application/client.hxx"
 
-#include <klay/testbench.h>
-
 #include <string>
 #include <thread>
 #include <memory>
 #include <iostream>
 #include <chrono>
+
+#include <gtest/gtest.h>
 
 using namespace rmi::application;
 using namespace rmi::transport;
@@ -48,7 +48,7 @@ struct Foo {
 	std::string name;
 };
 
-TESTCASE(SERVER_CLIENT)
+TEST(APPLICATION, SERVER_CLIENT)
 {
 	std::string sockPath = ("./server");
 
@@ -68,10 +68,10 @@ TESTCASE(SERVER_CLIENT)
 
 		std::string param = "RMI-TEST";
 		bool ret = client.invoke<bool>("Foo::setName", param);
-		TEST_EXPECT_LAMBDA(CLIENT_SIDE, ret, false);
+		EXPECT_EQ(ret, false);
 
 		std::string name = client.invoke<std::string>("Foo::getName");
-		TEST_EXPECT_LAMBDA(CLIENT_SIDE, name, param);
+		EXPECT_EQ(name, param);
 
 		server.stop();
 	});

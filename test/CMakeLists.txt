@@ -1,20 +1,34 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+#  Copyright (c) 2018 Samsung Electronics Co., Ltd All Rights Reserved
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License
+#
+# @file      CMakeLists.txt
+# @author    Sangwan kwon (sangwan.kwon@samsung.com)
+#
 
-PROJECT(rmi)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
 
-SET(LIB_DIR ${PROJECT_SOURCE_DIR}/../lib)
-SET(RMI_DIR ${PROJECT_SOURCE_DIR}/../src)
-SET(TEST_DIR ${PROJECT_SOURCE_DIR})
+SET(LIB_DIR ${PROJECT_SOURCE_DIR}/lib)
+SET(RMI_DIR ${PROJECT_SOURCE_DIR}/src)
+SET(TEST_DIR ${PROJECT_SOURCE_DIR}/test)
 
 INCLUDE_DIRECTORIES(${LIB_DIR} ${RMI_DIR})
 
 FUNCTION(BUILD_TEST TEST_NAME TEST_SRCS)
 	ADD_EXECUTABLE(${TEST_NAME} ${TEST_SRCS})
 
-	SET_TARGET_PROPERTIES(${TEST_NAME} PROPERTIES COMPILE_FLAGS "-fPIE")
-	SET_TARGET_PROPERTIES(${TEST_NAME} PROPERTIES LINK_FLAGS "-pie -pthread")
 
 	INSTALL(TARGETS ${TEST_NAME}
 			DESTINATION ${PROJECT_SOURCE_DIR}
@@ -26,11 +40,12 @@ FUNCTION(BUILD_TEST TEST_NAME TEST_SRCS)
 						WORLD_READ
 						WORLD_EXECUTE)
 
-	TARGET_LINK_LIBRARIES(${TEST_NAME} -ldl -lrt)
+	TARGET_LINK_LIBRARIES(${TEST_NAME} gtest_main -ldl -lrt)
+
+	ADD_TEST(NAME ${TEST_NAME} COMMAND ${TEST_NAME})
 ENDFUNCTION(BUILD_TEST)
 
-SET(TEST_SRCS ${LIB_DIR}/klay/testbench.cpp
-			  ${RMI_DIR}/audit/logger.cpp
+SET(RMI_SRCS  ${RMI_DIR}/audit/logger.cpp
 			  ${RMI_DIR}/audit/console.cpp
 			  ${RMI_DIR}/application/server.cpp
 			  ${RMI_DIR}/application/client.cpp
@@ -39,13 +54,13 @@ SET(TEST_SRCS ${LIB_DIR}/klay/testbench.cpp
 			  ${RMI_DIR}/transport/message.cpp
 			  ${RMI_DIR}/transport/connection.cpp
 			  ${RMI_DIR}/event/eventfd.cpp
-			  ${RMI_DIR}/event/mainloop.cpp
-			  ${TEST_DIR}/test-main.cpp
+			  ${RMI_DIR}/event/mainloop.cpp)
+
+SET(TEST_SRCS ${RMI_SRCS}
 			  ${TEST_DIR}/klass/test-functor.cpp
 			  ${TEST_DIR}/stream/test-archive.cpp
 			  ${TEST_DIR}/audit/test-console.cpp
 			  ${TEST_DIR}/transport/test-socket.cpp
-			  ${TEST_DIR}/transport/test-connection.cpp
-			  ${TEST_DIR}/application/test-server-client.cpp)
+			  ${TEST_DIR}/transport/test-connection.cpp)
 
-BUILD_TEST(${PROJECT_NAME} "${TEST_SRCS}")
+BUILD_TEST(${PROJECT_NAME}-test "${TEST_SRCS}")
