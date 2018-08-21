@@ -61,7 +61,8 @@ auto main() -> int
 
 using namespace rmi::application;
 
-auto main() -> int {
+auto main() -> int
+{
 // 1. Connect to server socket.
 	Client client("./server.sock");
 
