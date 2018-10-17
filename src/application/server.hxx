@@ -70,10 +70,11 @@ private:
 
 	std::set<std::string> socketPaths;
 
-	std::mutex mutex;
-
 	ConnectionMap connectionMap;
+	std::mutex connectionMutex;
+
 	FunctorMap functorMap;
+	std::mutex functorMutex;
 };
 
 template<typename O, typename F>

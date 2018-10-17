@@ -23,6 +23,10 @@
 
 #include "../transport/message.hxx"
 
+#include <ho/logger.hxx>
+
+using namespace ho;
+
 namespace rmi {
 namespace application {
 
@@ -43,11 +47,12 @@ void Server::start(void)
 void Server::stop(void)
 {
 	{
-		std::lock_guard<std::mutex> lock(this->mutex);
+		std::lock_guard<std::mutex> lock(this->connectionMutex);
 
 		for (auto iter : this->connectionMap)
 			this->mainloop.removeHandler(iter.first);
 	}
+
 	this->mainloop.stop();
 }
 
@@ -62,26 +67,35 @@ void Server::onAccept(std::shared_ptr<Connection>&& connection)
 		throw std::invalid_argument("Wrong connection.");
 
 	auto onRead = [this, connection]() {
-		std::lock_guard<std::mutex> lock(this->mutex);
+		std::shared_ptr<Connection> conn;
+
+		std::lock_guard<std::mutex> lock(this->connectionMutex);
 
 		auto iter = this->connectionMap.find(connection->getFd());
 		if (iter == this->connectionMap.end())
 			throw std::runtime_error("Faild to find connection.");
 
-		this->dispatch(iter->second);
+		conn = iter->second;
+
+		this->dispatch(conn);
 	};
 
-	auto close = [this, connection]() {
+	auto onError = [this, connection]() {
+		log(ERROR, std::string("Connection error occured. fd: ") +
+				   std::to_string(connection->getFd()));
 		this->onClose(connection);
 	};
 
 	int clientFd = connection->getFd();
-	this->mainloop.addHandler(clientFd, std::move(onRead), std::move(close));
+	this->mainloop.addHandler(clientFd, std::move(onRead), std::move(onError));
+	log(INFO, std::string("Connection is accepted. fd: ") + std::to_string(clientFd));
 
-	std::lock_guard<std::mutex> lock(this->mutex);
+	{
+		std::lock_guard<std::mutex> lock(this->connectionMutex);
 
-	this->dispatch(connection);
-	this->connectionMap[clientFd] = std::move(connection);
+		this->dispatch(connection);
+		this->connectionMap[clientFd] = std::move(connection);
+	}
 }
 
 void Server::onClose(const std::shared_ptr<Connection>& connection)
@@ -89,31 +103,41 @@ void Server::onClose(const std::shared_ptr<Connection>& connection)
 	if (connection == nullptr)
 		throw std::invalid_argument("Wrong connection.");
 
-	std::lock_guard<std::mutex> lock(this->mutex);
+	{
+		std::lock_guard<std::mutex> lock(this->connectionMutex);
 
-	auto iter = this->connectionMap.find(connection->getFd());
-	if (iter == this->connectionMap.end())
-		throw std::runtime_error("Faild to find connection.");
+		auto iter = this->connectionMap.find(connection->getFd());
+		if (iter == this->connectionMap.end())
+			throw std::runtime_error("Faild to find connection.");
 
-	this->mainloop.removeHandler(iter->first);
-	this->connectionMap.erase(iter);
+		this->mainloop.removeHandler(iter->first);
+		log(INFO, std::string("Connection is closed. fd: ") + std::to_string(iter->first));
+		this->connectionMap.erase(iter);
+	}
 }
 
 void Server::dispatch(const std::shared_ptr<Connection>& connection)
 {
 	Message request = connection->recv();
 	std::string funcName = request.signature;
-	auto iter = this->functorMap.find(funcName);
-	if (iter == this->functorMap.end())
-		throw std::runtime_error("Faild to find function.");
 
-	auto functor = iter->second;
-	auto result = functor->invoke(request.buffer);
+	{
+		std::lock_guard<std::mutex> lock(this->functorMutex);
 
-	Message reply(Message::Type::Reply, funcName);
-	reply.enclose(result);
+		auto iter = this->functorMap.find(funcName);
+		if (iter == this->functorMap.end())
+			throw std::runtime_error("Faild to find function.");
 
-	connection->send(reply);
+		log(DEBUG, "Remote method invokation> " + funcName);
+
+		auto functor = iter->second;
+		auto result = functor->invoke(request.buffer);
+
+		Message reply(Message::Type::Reply, funcName);
+		reply.enclose(result);
+
+		connection->send(reply);
+	}
 }
 
 } // namespace application

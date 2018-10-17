@@ -59,6 +59,7 @@ SET(TEST_SRCS ${RMI_SRCS}
 			  ${TEST_DIR}/stream/test-archive.cpp
 			  ${TEST_DIR}/transport/test-socket.cpp
 			  ${TEST_DIR}/transport/test-connection.cpp
+			  ${TEST_DIR}/application/test-server-client.cpp
 			  ${TEST_DIR}/ho/test-logger.cpp)
 
 BUILD_TEST(${PROJECT_NAME}-test "${TEST_SRCS}")
