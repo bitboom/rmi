@@ -26,7 +26,7 @@
 
 #include <cstring>
 
-#include "../audit/console.hxx"
+#include <ho/logger.hxx>
 
 namespace rmi {
 namespace event {
@@ -129,7 +129,7 @@ bool Mainloop::dispatch(int timeout) noexcept
 			}
 
 		} catch (std::exception& e) {
-			CONSOLE_D("EXCEPTION ON MAINLOOP" << e.what());
+			ho::log(DEBUG, std::string("EXCEPTION ON MAINLOOP") + e.what());
 		}
 	}
 

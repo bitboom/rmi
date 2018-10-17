@@ -45,9 +45,7 @@ FUNCTION(BUILD_TEST TEST_NAME TEST_SRCS)
 	ADD_TEST(NAME ${TEST_NAME} COMMAND ${TEST_NAME})
 ENDFUNCTION(BUILD_TEST)
 
-SET(RMI_SRCS  ${RMI_DIR}/audit/logger.cpp
-			  ${RMI_DIR}/audit/console.cpp
-			  ${RMI_DIR}/application/server.cpp
+SET(RMI_SRCS  ${RMI_DIR}/application/server.cpp
 			  ${RMI_DIR}/application/client.cpp
 			  ${RMI_DIR}/stream/archive.cpp
 			  ${RMI_DIR}/transport/socket.cpp
@@ -59,8 +57,8 @@ SET(RMI_SRCS  ${RMI_DIR}/audit/logger.cpp
 SET(TEST_SRCS ${RMI_SRCS}
 			  ${TEST_DIR}/klass/test-functor.cpp
 			  ${TEST_DIR}/stream/test-archive.cpp
-			  ${TEST_DIR}/audit/test-console.cpp
 			  ${TEST_DIR}/transport/test-socket.cpp
-			  ${TEST_DIR}/transport/test-connection.cpp)
+			  ${TEST_DIR}/transport/test-connection.cpp
+			  ${TEST_DIR}/ho/test-logger.cpp)
 
 BUILD_TEST(${PROJECT_NAME}-test "${TEST_SRCS}")

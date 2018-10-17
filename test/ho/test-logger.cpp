@@ -14,42 +14,35 @@
  *  limitations under the License
  */
 /*
- * @file        colorize.hxx
+ * @file        test-logger.cpp
  * @author      Sangwan Kwon (sangwan.kwon@samsung.com)
- * @brief       Colorize console text.
  */
 
-#pragma once
+#include <ho/logger.hxx>
 
-#include <ostream>
+#include <gtest/gtest.h>
 
-namespace rmi {
-namespace audit {
+/*
+TEST(AUDIT, CONCOLE_LOGGER_ARGS)
+{
+	CONSOLE_I("LogLevel - Info: " << 1 << '2' << "3");
+	CONSOLE_D("LogLevel - Debug: " << 1 << '2' << "3");
+	CONSOLE_W("LogLevel - Warning: " << 1 << '2' << "3");
+	CONSOLE_E("LogLevel - Error: " << 1 << '2' << "3");
+}
+*/
 
-enum class Code {
-	BLACK = 30,
-	RED = 31,
-	GREEN = 32,
-	YELLOW = 33,
-	BLUE = 34,
-	MAGENTA = 35,
-	CYAN = 36,
-	WHITE = 37,
-	DEFAULT = 39
-};
+TEST(HO_LOGGER, CONCOLE_LOGGER_TEXT)
+{
+	ho::log(INFO, "LogLevel - Info");
+	ho::log(DEBUG, "LogLevel - Debug");
+	ho::log(WARN, "LogLevel - Warn");
+	ho::log(ERROR, "LogLevel - Error");
+}
 
-class Colorize {
-public:
-	explicit Colorize(Code code = Code::DEFAULT) : code(code) {}
-
-	friend std::ostream& operator<<(std::ostream& os, const Colorize& c)
-	{
-		return os << "\033[" << static_cast<int>(c.code) << "m";
-	}
-
-private:
-	Code code;
-};
-
-} // namespace audit
-} // namespace rmi
+TEST(HO_LOGGER, CONCOLE_LOGGER_ARGS)
+{
+	ho::log(INFO, 1);
+	ho::log(DEBUG, 1.1f);
+	ho::log(WARN, std::string("String"));
+}
