@@ -54,8 +54,6 @@ void log(const LogRecord& record, const T& message) noexcept;
 #define WARN ho::LogRecord { ho::LogLevel::Warn, __FILE__, __LINE__, __func__ }
 #define ERROR ho::LogRecord { ho::LogLevel::Error, __FILE__, __LINE__, __func__ }
 
-#define WARN_ERROR 3
-
 namespace {
 
 std::string to_string(const ho::LogRecord& record)
